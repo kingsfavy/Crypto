@@ -63,6 +63,7 @@
         .price-details {
             display: none;
             margin-top: 10px;
+            text-align: left;
         }
         .show-button {
             padding: 8px 15px;
@@ -71,6 +72,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 10px;
         }
         .show-button:hover {
             background-color: #0056b3;
@@ -89,16 +91,21 @@
         const currencies = { usd: 1, ngn: 1150, gbp: 0.78, eur: 0.92, jpy: 148 };
         let allCryptos = [];
 
-        async function fetchCryptoData() {
-            const response = await fetch(`${apiUrl}?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
+        async function fetchCryptoData(page) {
+            const response = await fetch(`${apiUrl}?vs_currency=usd&order=market_cap_desc&per_page=50&page=${page}&sparkline=false`);
             return response.json();
         }
 
         async function displayCryptos() {
             const container = document.getElementById('crypto-container');
-            allCryptos = await fetchCryptoData();
-            container.innerHTML = '';
 
+            // Fetch 150 cryptocurrencies (3 pages of 50 each)
+            for (let page = 1; page <= 3; page++) {
+                const cryptos = await fetchCryptoData(page);
+                allCryptos = allCryptos.concat(cryptos);
+            }
+
+            container.innerHTML = '';
             allCryptos.forEach(crypto => {
                 const priceChangeClass = crypto.price_change_percentage_24h >= 0 ? 'price-up' : 'price-down';
                 const card = document.createElement('div');
