@@ -77,6 +77,26 @@
         .show-button:hover {
             background-color: #0056b3;
         }
+        .compare-checkbox {
+            margin-top: 10px;
+        }
+        #compare-button {
+            padding: 10px 20px;
+            margin: 20px auto;
+            display: block;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #compare-button:hover {
+            background-color: #218838;
+        }
+        #comparison-container {
+            margin-top: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -85,11 +105,14 @@
     <div class="crypto-container" id="crypto-container">
         <!-- Cryptocurrency cards will be inserted here -->
     </div>
+    <button id="compare-button" onclick="compareSelected()">Compare Selected</button>
+    <div id="comparison-container"></div>
 
     <script>
         const apiUrl = 'https://api.coingecko.com/api/v3/coins/markets';
         const currencies = { usd: 1, ngn: 1150, gbp: 0.78, eur: 0.92, jpy: 148 };
         let allCryptos = [];
+        let selectedCryptos = [];
 
         async function fetchCryptoData(page) {
             const response = await fetch(`${apiUrl}?vs_currency=usd&order=market_cap_desc&per_page=50&page=${page}&sparkline=false`);
@@ -116,6 +139,7 @@
                         <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
                     </div>
                     <button class="show-button" onclick="togglePrices('${crypto.id}')">Show Prices</button>
+                    <input type="checkbox" class="compare-checkbox" value="${crypto.id}" onchange="toggleSelection('${crypto.id}')"> Compare
                     <div id="${crypto.id}" class="price-details">
                         <p>USD: $${crypto.current_price.toLocaleString()}</p>
                         <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
@@ -141,42 +165,34 @@
             }
         }
 
-        document.getElementById('search').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const filteredCryptos = allCryptos.filter(crypto => 
-                crypto.name.toLowerCase().includes(searchTerm) || 
-                crypto.symbol.toLowerCase().includes(searchTerm)
-            );
-            updateCryptoCards(filteredCryptos);
-        });
+        function toggleSelection(id) {
+            if (selectedCryptos.includes(id)) {
+                selectedCryptos = selectedCryptos.filter(crypto => crypto !== id);
+            } else {
+                selectedCryptos.push(id);
+            }
+        }
 
-        function updateCryptoCards(filteredCryptos) {
-            const container = document.getElementById('crypto-container');
-            container.innerHTML = '';
+        function compareSelected() {
+            const comparisonContainer = document.getElementById('comparison-container');
+            comparisonContainer.innerHTML = '<h2>Comparison Results</h2>';
 
-            filteredCryptos.forEach(crypto => {
-                const priceChangeClass = crypto.price_change_percentage_24h >= 0 ? 'price-up' : 'price-down';
-                const card = document.createElement('div');
-                card.className = 'crypto-card';
-                card.innerHTML = `
-                    <div class="crypto-name">
-                        <img src="${crypto.image}" alt="${crypto.name} logo">
-                        <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
-                    </div>
-                    <button class="show-button" onclick="togglePrices('${crypto.id}')">Show Prices</button>
-                    <div id="${crypto.id}" class="price-details">
+            const comparedCryptos = allCryptos.filter(crypto => selectedCryptos.includes(crypto.id));
+            if (comparedCryptos.length < 2) {
+                comparisonContainer.innerHTML += '<p>Please select at least two cryptocurrencies to compare.</p>';
+                return;
+            }
+
+            comparedCryptos.forEach(crypto => {
+                comparisonContainer.innerHTML += `
+                    <div class="crypto-card">
+                        <h3>${crypto.name} (${crypto.symbol.toUpperCase()})</h3>
                         <p>USD: $${crypto.current_price.toLocaleString()}</p>
-                        <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
-                        <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
-                        <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
-                        <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
                         <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
-                        <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
                         <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
                         <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
                     </div>
                 `;
-                container.appendChild(card);
             });
         }
 
