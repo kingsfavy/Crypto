@@ -15,14 +15,23 @@
         h1 {
             text-align: center;
         }
-        #search {
+        #search, #compare-button {
             width: 50%;
             padding: 10px;
-            margin: 20px auto;
+            margin: 10px auto;
             display: block;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
+            cursor: pointer;
+        }
+        #compare-button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+        }
+        #compare-button:hover {
+            background-color: #218838;
         }
         .crypto-container {
             display: flex;
@@ -80,19 +89,6 @@
         .compare-checkbox {
             margin-top: 10px;
         }
-        #compare-button {
-            padding: 10px 20px;
-            margin: 20px auto;
-            display: block;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #compare-button:hover {
-            background-color: #218838;
-        }
         #comparison-container {
             margin-top: 30px;
             text-align: center;
@@ -101,11 +97,11 @@
 </head>
 <body>
     <h1>Cryptocurrency Prices</h1>
+    <button id="compare-button" onclick="compareSelected()">Compare Selected</button>
     <input type="text" id="search" placeholder="Search for a cryptocurrency...">
     <div class="crypto-container" id="crypto-container">
         <!-- Cryptocurrency cards will be inserted here -->
     </div>
-    <button id="compare-button" onclick="compareSelected()">Compare Selected</button>
     <div id="comparison-container"></div>
 
     <script>
@@ -122,8 +118,8 @@
         async function displayCryptos() {
             const container = document.getElementById('crypto-container');
 
-            // Fetch 150 cryptocurrencies (3 pages of 50 each)
-            for (let page = 1; page <= 3; page++) {
+            // Fetch 250 cryptocurrencies (5 pages of 50 each)
+            for (let page = 1; page <= 5; page++) {
                 const cryptos = await fetchCryptoData(page);
                 allCryptos = allCryptos.concat(cryptos);
             }
@@ -158,11 +154,7 @@
 
         function togglePrices(id) {
             const priceDiv = document.getElementById(id);
-            if (priceDiv.style.display === 'none' || priceDiv.style.display === '') {
-                priceDiv.style.display = 'block';
-            } else {
-                priceDiv.style.display = 'none';
-            }
+            priceDiv.style.display = priceDiv.style.display === 'block' ? 'none' : 'block';
         }
 
         function toggleSelection(id) {
