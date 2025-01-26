@@ -43,6 +43,17 @@
         .crypto-card:hover {
             transform: scale(1.05);
         }
+        .crypto-name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .crypto-name img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
         .price-up {
             color: green;
         }
@@ -78,7 +89,10 @@
                 const card = document.createElement('div');
                 card.className = 'crypto-card';
                 card.innerHTML = `
-                    <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
+                    <div class="crypto-name">
+                        <img src="${crypto.image}" alt="${crypto.name} logo">
+                        <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
+                    </div>
                     <p>USD: $${crypto.current_price.toLocaleString()}</p>
                     <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
                     <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
@@ -110,7 +124,10 @@
                 const card = document.createElement('div');
                 card.className = 'crypto-card';
                 card.innerHTML = `
-                    <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
+                    <div class="crypto-name">
+                        <img src="${crypto.image}" alt="${crypto.name} logo">
+                        <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
+                    </div>
                     <p>USD: $${crypto.current_price.toLocaleString()}</p>
                     <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
                     <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
