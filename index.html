@@ -122,6 +122,7 @@
                         <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
                         <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
                         <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
+                        <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
                         <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
                         <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
                         <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
@@ -169,6 +170,7 @@
                         <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
                         <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
                         <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
+                        <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
                         <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
                         <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
                         <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
