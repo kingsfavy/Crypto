@@ -60,6 +60,21 @@
         .price-down {
             color: red;
         }
+        .price-details {
+            display: none;
+            margin-top: 10px;
+        }
+        .show-button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .show-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -93,17 +108,29 @@
                         <img src="${crypto.image}" alt="${crypto.name} logo">
                         <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
                     </div>
-                    <p>USD: $${crypto.current_price.toLocaleString()}</p>
-                    <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
-                    <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
-                    <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
-                    <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
-                    <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
-                    <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
-                    <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
+                    <button class="show-button" onclick="togglePrices('${crypto.id}')">Show Prices</button>
+                    <div id="${crypto.id}" class="price-details">
+                        <p>USD: $${crypto.current_price.toLocaleString()}</p>
+                        <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
+                        <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
+                        <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
+                        <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
+                        <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
+                        <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
+                        <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
+                    </div>
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function togglePrices(id) {
+            const priceDiv = document.getElementById(id);
+            if (priceDiv.style.display === 'none' || priceDiv.style.display === '') {
+                priceDiv.style.display = 'block';
+            } else {
+                priceDiv.style.display = 'none';
+            }
         }
 
         document.getElementById('search').addEventListener('input', function() {
@@ -128,14 +155,17 @@
                         <img src="${crypto.image}" alt="${crypto.name} logo">
                         <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
                     </div>
-                    <p>USD: $${crypto.current_price.toLocaleString()}</p>
-                    <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
-                    <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
-                    <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
-                    <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
-                    <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
-                    <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
-                    <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
+                    <button class="show-button" onclick="togglePrices('${crypto.id}')">Show Prices</button>
+                    <div id="${crypto.id}" class="price-details">
+                        <p>USD: $${crypto.current_price.toLocaleString()}</p>
+                        <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
+                        <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
+                        <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
+                        <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
+                        <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
+                        <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
+                        <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
+                    </div>
                 `;
                 container.appendChild(card);
             });
