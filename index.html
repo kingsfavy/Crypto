@@ -9,162 +9,82 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             color: #333;
-            transition: background-color 0.3s, color 0.3s;
+            margin: 0;
+            padding: 20px;
         }
-        .dark-mode {
-            background-color: #333;
-            color: #f4f4f4;
+        h1 {
+            text-align: center;
         }
         .crypto-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
+            gap: 20px;
         }
         .crypto-card {
             background: #fff;
             border: 1px solid #ddd;
             border-radius: 8px;
-            margin: 10px;
             padding: 20px;
-            width: 200px;
+            width: 300px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            transition: transform 0.3s;
         }
         .crypto-card:hover {
             transform: scale(1.05);
         }
-        .dark-mode .crypto-card {
-            background: #444;
-            border-color: #555;
+        .price-up {
+            color: green;
         }
-        .search-bar {
-            margin: 20px;
-            padding: 10px;
-            width: 300px;
-            font-size: 16px;
-        }
-        .dark-mode .search-bar {
-            background: #555;
-            color: #f4f4f4;
-            border: 1px solid #666;
-        }
-        .toggle-button {
-            margin: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #ff9900;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
+        .price-down {
+            color: red;
         }
     </style>
 </head>
 <body>
-    <input type="text" class="search-bar" placeholder="Search cryptocurrency..." oninput="filterCryptos(event)">
-    <button class="toggle-button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
-    <div class="crypto-container" id="crypto-container"></div>
+    <h1>Cryptocurrency Prices</h1>
+    <div class="crypto-container" id="crypto-container">
+        <!-- Cryptocurrency cards will be inserted here -->
+    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const apiUrl = 'https://api.coingecko.com/api/v3/coins/markets';
-        const currencies = ['usd', 'ngn', 'gbp', 'eur', 'jpy'];
-        let cryptoData = [];
-        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-        let darkMode = localStorage.getItem('darkMode') === 'true';
+        const currencies = { usd: 1, ngn: 1150, gbp: 0.78, eur: 0.92, jpy: 148 }; 
+        const perPage = 250; 
+        const totalCryptos = 1000; 
+        const pages = Math.ceil(totalCryptos / perPage);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchCryptoData();
-            applyDarkMode();
-        });
-
-        async function fetchCryptoData() {
-            try {
-                const response = await fetch(`${apiUrl}?vs_currency=usd&order=market_cap_desc&per_page=500&page=1&sparkline=false`);
-                cryptoData = await response.json();
-                displayCryptos(cryptoData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+        async function fetchCryptoData(page) {
+            const response = await fetch(`${apiUrl}?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=${page}&sparkline=false`);
+            return response.json();
         }
 
-        function displayCryptos(data) {
+        async function displayCryptos() {
             const container = document.getElementById('crypto-container');
-            container.innerHTML = '';
-            data.forEach(crypto => {
-                const card = document.createElement('div');
-                card.className = 'crypto-card';
-                card.innerHTML = `
-                    <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
-                    <p>USD: $${crypto.current_price.toLocaleString()}</p>
-                    <p>NGN: ₦${(crypto.current_price * getExchangeRate('ngn')).toLocaleString()}</p>
-                    <p>GBP: £${(crypto.current_price * getExchangeRate('gbp')).toLocaleString()}</p>
-                    <p>EUR: €${(crypto.current_price * getExchangeRate('eur')).toLocaleString()}</p>
-                    <p>JPY: ¥${(crypto.current_price * getExchangeRate('jpy')).toLocaleString()}</p>
-                    <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
-                    <p>Supply: ${crypto.circulating_supply.toLocaleString()}</p>
-                    <button onclick="toggleFavorite('${crypto.id}')">
-                        ${favorites.includes(crypto.id) ? 'Remove from Favorites' : 'Add to Favorites'}
-                    </button>
-                    <canvas id="chart-${crypto.id}" width="180" height="100"></canvas>
-                `;
-                container.appendChild(card);
-                drawChart(crypto.id);
-            });
-        }
+            for (let page = 1; page <= pages; page++) {
+                const data = await fetchCryptoData(page);
+                data.forEach(crypto => {
+                    const priceChangeClass = crypto.price_change_percentage_24h >= 0 ? 'price-up' : 'price-down';
 
-        function getExchangeRate(currency) {
-            // Placeholder function: Implement actual exchange rate retrieval
-            const rates = { ngn: 1150, gbp: 0.78, eur: 0.92, jpy: 148 };
-            return             rates[currency] || 1;
-        }
-
-        function filterCryptos(event) {
-            const searchValue = event.target.value.toLowerCase();
-            const filteredData = cryptoData.filter(crypto => 
-                crypto.name.toLowerCase().includes(searchValue) || 
-                crypto.symbol.toLowerCase().includes(searchValue)
-            );
-            displayCryptos(filteredData);
-        }
-
-        function toggleFavorite(id) {
-            if (favorites.includes(id)) {
-                favorites = favorites.filter(item => item !== id);
-            } else {
-                favorites.push(id);
-            }
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            displayCryptos(cryptoData);
-        }
-
-        function drawChart(cryptoId) {
-            const ctx = document.getElementById(`chart-${cryptoId}`).getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['1 day ago', '12 hours ago', 'Now'],
-                    datasets: [{
-                        label: 'Price Trend (USD)',
-                        data: [Math.random() * 100, Math.random() * 100, Math.random() * 100], // Placeholder for actual data
-                        borderColor: 'orange',
-                        borderWidth: 2
-                    }]
-                },
-                options: { scales: { x: { display: false }, y: { beginAtZero: false } } }
-            });
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDarkMode);
-        }
-
-        function applyDarkMode() {
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
+                    const card = document.createElement('div');
+                    card.className = 'crypto-card';
+                    card.innerHTML = `
+                        <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
+                        <p>USD: $${crypto.current_price.toLocaleString()}</p>
+                        <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
+                        <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
+                        <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
+                        <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
+                        <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
+                        <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
+                        <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
+                    `;
+                    container.appendChild(card);
+                });
             }
         }
+
+        document.addEventListener('DOMContentLoaded', displayCryptos);
     </script>
 </body>
 </html>
