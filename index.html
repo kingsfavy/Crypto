@@ -97,6 +97,29 @@
         .compare-checkbox {
             margin-top: 10px;
         }
+
+        /* New section: Grid layout for all cryptocurrencies and their prices */
+        #all-cryptos-section {
+            margin-top: 50px;
+        }
+        .crypto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .crypto-grid .crypto-card {
+            display: block;
+            text-align: center;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        .crypto-grid h3 {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -104,8 +127,14 @@
     <input type="text" id="search" placeholder="Search for a cryptocurrency...">
     <button id="compare-button" onclick="compareSelected()">Compare Selected</button>
     <div id="comparison-container"></div>
-    <div class="crypto-container" id="crypto-container">
-        <!-- Cryptocurrency cards will be inserted here -->
+    <div class="crypto-container" id="crypto-container"></div>
+
+    <!-- New Section to Display All Cryptos with Prices -->
+    <div id="all-cryptos-section">
+        <h2>All Cryptocurrencies with Prices</h2>
+        <div class="crypto-grid" id="crypto-grid">
+            <!-- Cryptocurrency grid items will be inserted here -->
+        </div>
     </div>
 
     <script>
@@ -128,6 +157,7 @@
 
         async function displayCryptos() {
             const container = document.getElementById('crypto-container');
+            const allCryptoGrid = document.getElementById('crypto-grid');
 
             // Fetch 150 cryptocurrencies (3 pages of 50 each)
             for (let page = 1; page <= 3; page++) {
@@ -136,6 +166,9 @@
             }
 
             container.innerHTML = '';
+            allCryptoGrid.innerHTML = '';
+
+            // Populate the individual crypto cards for comparison
             allCryptos.forEach(crypto => {
                 const priceChangeClass = crypto.price_change_percentage_24h >= 0 ? 'price-up' : 'price-down';
                 const card = document.createElement('div');
@@ -161,6 +194,20 @@
                     </div>
                 `;
                 container.appendChild(card);
+
+                // Populate the grid with all cryptos and their prices
+                const gridCard = document.createElement('div');
+                gridCard.className = 'crypto-card';
+                gridCard.innerHTML = `
+                    <h3>${crypto.name} (${crypto.symbol.toUpperCase()})</h3>
+                    <p>USD: $${crypto.current_price.toLocaleString()}</p>
+                    <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
+                    <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
+                    <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
+                    <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
+                    <p>AUD: A$${(crypto.current_price * currencies.aud).toLocaleString()}</p>
+                `;
+                allCryptoGrid.appendChild(gridCard);
             });
         }
 
