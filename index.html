@@ -40,10 +40,6 @@
         #comparison-container {
             margin-top: 30px;
             text-align: center;
-            display: flex;
-            justify-content: space-evenly;
-            flex-wrap: wrap;
-            gap: 20px;
         }
         .crypto-container {
             display: flex;
@@ -114,7 +110,14 @@
 
     <script>
         const apiUrl = 'https://api.coingecko.com/api/v3/coins/markets';
-        const currencies = { usd: 1, ngn: 1150, gbp: 0.78, eur: 0.92, jpy: 148 };
+        const currencies = { 
+            usd: 1, 
+            ngn: 1150, 
+            gbp: 0.78, 
+            eur: 0.92, 
+            jpy: 148, 
+            aud: 1.5  // Added AUD conversion rate
+        };
         let allCryptos = [];
         let selectedCryptos = [];
 
@@ -150,6 +153,7 @@
                         <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
                         <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
                         <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
+                        <p>AUD: A$${(crypto.current_price * currencies.aud).toLocaleString()}</p>  <!-- Added AUD price -->
                         <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
                         <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
                         <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
@@ -192,6 +196,7 @@
                     <div class="crypto-card">
                         <h3>${crypto.name} (${crypto.symbol.toUpperCase()})</h3>
                         <p>USD: $${crypto.current_price.toLocaleString()}</p>
+                        <p>AUD: A$${(crypto.current_price * currencies.aud).toLocaleString()}</p> <!-- Added AUD -->
                         <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
                         <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
                         <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
