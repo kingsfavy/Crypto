@@ -114,21 +114,17 @@ height:auto;
         #all-cryptos-section {
             margin-top: 50px;
         }
-        .crypto-grid, .crypto-card {
-                  display: grid;
+        .crypto-grid {
+            display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             padding: 20px;
             margin-top: 20px;
         }
-        .crypto-card {
+        .crypto-grid .crypto-card {
             display: block;
             text-align: center;
-            border-radius: 8px;
             padding: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            margin:3%;
         }
         .crypto-grid h3 {
             margin-top: 10px;
