@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cryptocurrency Prices</title>
     <style>
+        *{
+            margin:0;
+            padding:0;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -25,14 +29,13 @@
             font-size: 16px;
         }
         #compare-button {
-            padding: 10px 20px;
-            margin: 20px auto;
-            display: block;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+  width:45%;
+padding:18px;
+font-size:18px;
+background:#4d22b2;
+border:none;
+color:#fff;
+height:auto;
         }
         #compare-button:hover {
             background-color: #218838;
@@ -43,9 +46,11 @@
         }
         .crypto-container {
             display: flex;
+            width:100%;
             flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
+            gap: 1.5rem;
+            height:auto;
+            justify-content: space-around;
         }
         .crypto-card {
             background: #fff;
@@ -54,7 +59,7 @@
             padding: 20px;
             width: 300px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
+            text-align:center;
             transition: transform 0.3s;
         }
         .crypto-card:hover {
@@ -83,13 +88,13 @@
             text-align: left;
         }
         .show-button {
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
+width:45%;
+padding:18px;
+font-size:18px;
+background:#4d22b2;
+border:none;
+color:#fff;
+height:auto;
         }
         .show-button:hover {
             background-color: #0056b3;
