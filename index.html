@@ -66,7 +66,7 @@ transform:translate(50%);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
             transition: transform 0.3s;
-            transition: transform 0.3s;
+            
         }
         .crypto-card:hover {
             transform: scale(1.05);
@@ -115,8 +115,9 @@ height:auto;
             margin-top: 50px;
         }
         .crypto-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            display: flex;
+            width:100%;
+            justify-content:space-evenly;
             gap: 20px;
             padding: 20px;
             margin-top: 20px;
