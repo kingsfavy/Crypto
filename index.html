@@ -115,14 +115,13 @@ height:auto;
             margin-top: 50px;
         }
         .crypto-grid {
-            display: flex;
-            width:100%;
-            justify-content:space-evenly;
+                  display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             padding: 20px;
             margin-top: 20px;
         }
-        .crypto-grid .crypto-card {
+        .crypto-card {
             display: block;
             text-align: center;
             border-radius: 8px;
