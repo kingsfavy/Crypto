@@ -45,7 +45,7 @@ transform:translate(50%);
         #comparison-container {
             margin-top: 30px;
             width:100%;
-            justify-content:space-around;
+            justify-content:center;
             align-content:center;
             height:auto;
         }
@@ -58,11 +58,14 @@ transform:translate(50%);
             justify-content: space-around;
         }
         .crypto-card {
-           width:300px;
-            background:#fff;
+                  background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             padding: 20px;
-            width: auto;
-            text-align:center;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
             transition: transform 0.3s;
         }
         .crypto-card:hover {
@@ -148,6 +151,7 @@ height:auto;
     <input type="text" id="search" placeholder="Search for a cryptocurrency...">
     <button id="compare-button" onclick="compareSelected()">Compare Selected</button>
     <div id="comparison-container"></div>
+    <br>
     <div class="crypto-container" id="crypto-container"></div>
 
     <!-- New Section to Display All Cryptos with Prices -->
