@@ -128,19 +128,25 @@ height:auto;
     </style>
 </head>
 <body>
-    <h1>Cryptocurrency Prices</h1>
+    <h1>Cryptocurrencies</h1>
+
+     <div id="all-cryptos-section">
+        <h2>All Cryptocurrencies with Prices</h2>
+        <div class="crypto-grid" id="crypto-grid">
+            <!-- Cryptocurrency grid items will be inserted here -->
+        </div>
+    </div>
+    <br><br>
+
+            <h5>All Cryptocurrencies with volume, change per hour, market cap</h5>
+    <br>
     <input type="text" id="search" placeholder="Search for a cryptocurrency...">
     <button id="compare-button" onclick="compareSelected()">Compare Selected</button>
     <div id="comparison-container"></div>
     <div class="crypto-container" id="crypto-container"></div>
 
     <!-- New Section to Display All Cryptos with Prices -->
-    <div id="all-cryptos-section">
-        <h2>All Cryptocurrencies with Prices</h2>
-        <div class="crypto-grid" id="crypto-grid">
-            <!-- Cryptocurrency grid items will be inserted here -->
-        </div>
-    </div>
+   
 
     <script>
         const apiUrl = 'https://api.coingecko.com/api/v3/coins/markets';
