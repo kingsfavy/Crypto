@@ -3,190 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cryptocurrency Prices</title>
+    <title>Cryptocurrency Live Tracker</title>
     <style>
-        *{
-            margin:0;
-            padding:0;
-        }
+        /* General styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
+
         h1 {
             text-align: center;
+            margin-top: 20px;
+            color: #222;
         }
-        #search {
-            width: 50%;
-            padding: 10px;
-            margin: 20px auto;
-            display: block;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+
+        /* Container styles */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        #compare-button {
-  width:45%;
-padding:8px 12px;
-font-size:18px;
-background:#4d22b2;
-border:none;
-color:#fff;
-height:auto;
-left:50%;
-transform:translate(50%);
-        }
-        #compare-button:hover {
-            background-color: #218838;
-        }
-        #comparison-container {
-            margin-top: 30px;
-            width:100%;
-            justify-content:center;
-            align-content:center;
-            height:auto;
-        }
+
         .crypto-container {
             display: flex;
-            width:100%;
             flex-wrap: wrap;
-            gap: 1.5rem;
-            height:auto;
-            justify-content: space-around;
+            gap: 20px;
+            justify-content: center;
         }
+
+        /* Card styles */
         .crypto-card {
-                  background: #fff;
-            border: 1px solid #ddd;
+            background: #fff;
             border-radius: 8px;
-            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 300px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
             text-align: center;
-            transition: transform 0.3s;
-            
+            transition: transform 0.3s ease;
         }
+
         .crypto-card:hover {
-            transform: scale(1.05);
+            transform: translateY(-5px);
         }
+
         .crypto-name {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin:2% 0;
-        }
-        .crypto-name img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-        }
-        .price-up {
-            color: green;
-        }
-        .price-down {
-            color: red;
-        }
-        .price-details {
-            display: none;
-            margin-top: 10px;
-            text-align: left;
-        }
-        .show-button {
-width:45%;
-padding:8px 12px;
-font-size:18px;
-background:#4d22b2;
-border:none;
-color:#fff;
-height:auto;
-        }
-        .show-button:hover {
-            background-color: #0056b3;
-        }
-        .compare-checkbox {
-            margin-top: 10px;
+            margin-bottom: 15px;
         }
 
-        /* New section: Grid layout for all cryptocurrencies and their prices */
-        #all-cryptos-section {
-            margin-top: 50px;
+        .crypto-name img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
         }
-        .crypto-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            margin-top: 20px;
+
+        /* Price details */
+        .crypto-card p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #555;
         }
-        .crypto-grid .crypto-card {
-            display: block;
-            text-align: center;
-            padding: 15px;
+
+        /* Price change styling */
+        .price-up {
+            color: green;
+            font-weight: bold;
         }
-        .crypto-grid h3 {
-            margin-top: 10px;
+
+        .price-down {
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Cryptocurrencies</h1>
-
-     <div id="all-cryptos-section">
-        <h2>All Cryptocurrencies with Prices</h2>
-        <div class="crypto-grid" id="crypto-grid">
-            <!-- Cryptocurrency grid items will be inserted here -->
+    <div class="main-container">
+        <h1>Cryptocurrency Live Tracker</h1>
+        <div id="crypto-container" class="crypto-container">
+            <!-- Crypto cards will be dynamically inserted here -->
         </div>
     </div>
-    <br><br>
-
-            <h5>All Cryptocurrencies with volume, change per hour, market cap</h5>
-    <br>
-    <input type="text" id="search" placeholder="Search for a cryptocurrency...">
-    <button id="compare-button" onclick="compareSelected()">Compare Selected</button>
-    <div id="comparison-container"></div>
-    <br>
-    <div class="crypto-container" id="crypto-container"></div>
-
-    <!-- New Section to Display All Cryptos with Prices -->
-   
-
     <script>
         const apiUrl = 'https://api.coingecko.com/api/v3/coins/markets';
-        const currencies = { 
-            usd: 1, 
-            ngn: 1150, 
-            gbp: 0.78, 
-            eur: 0.92, 
-            jpy: 148, 
-            aud: 1.5  // Added AUD conversion rate
+        const tickersUrl = 'https://api.coingecko.com/api/v3/coins/';
+        const currencies = {
+            usd: 1,
+            gbp: 0.78,
+            eur: 0.92,
+            jpy: 148,
+            aud: 1.5
         };
-        let allCryptos = [];
-        let selectedCryptos = [];
 
-        async function fetchCryptoData(page) {
-            const response = await fetch(`${apiUrl}?vs_currency=usd&order=market_cap_desc&per_page=50&page=${page}&sparkline=false`);
+        // Fetch market data for BTC, ETH, and USDT
+        async function fetchCryptoData() {
+            const response = await fetch(`${apiUrl}?vs_currency=usd&ids=bitcoin,ethereum,tether&order=market_cap_desc&sparkline=false`);
             return response.json();
         }
 
+        // Fetch real-time price percentage changes every second
+        async function fetchPriceChanges() {
+            const btcData = await fetch(`${tickersUrl}bitcoin/tickers`).then(res => res.json());
+            const ethData = await fetch(`${tickersUrl}ethereum/tickers`).then(res => res.json());
+            const usdtData = await fetch(`${tickersUrl}tether/tickers`).then(res => res.json());
+
+            return {
+                bitcoin: btcData.tickers[0]?.last ?? 0,
+                ethereum: ethData.tickers[0]?.last ?? 0,
+                tether: usdtData.tickers[0]?.last ?? 0
+            };
+        }
+
+        // Display updated crypto prices and market data
         async function displayCryptos() {
             const container = document.getElementById('crypto-container');
-            const allCryptoGrid = document.getElementById('crypto-grid');
-
-            // Fetch 150 cryptocurrencies (3 pages of 50 each)
-            for (let page = 1; page <= 3; page++) {
-                const cryptos = await fetchCryptoData(page);
-                allCryptos = allCryptos.concat(cryptos);
-            }
-
             container.innerHTML = '';
-            allCryptoGrid.innerHTML = '';
 
-            // Populate the individual crypto cards for comparison
-            allCryptos.forEach(crypto => {
-                const priceChangeClass = crypto.price_change_percentage_24h >= 0 ? 'price-up' : 'price-down';
+            const cryptos = await fetchCryptoData();
+            const cryptoChanges = await fetchPriceChanges();
+
+            cryptos.forEach(crypto => {
+                const priceChangeClass = cryptoChanges[crypto.id] >= 0 ? 'price-up' : 'price-down';
+
                 const card = document.createElement('div');
                 card.className = 'crypto-card';
                 card.innerHTML = `
@@ -194,79 +137,22 @@ height:auto;
                         <img src="${crypto.image}" alt="${crypto.name} logo">
                         <h2>${crypto.name} (${crypto.symbol.toUpperCase()})</h2>
                     </div>
-                    <button class="show-button" onclick="togglePrices('${crypto.id}')">Show Prices</button>
-                    <input type="checkbox" class="compare-checkbox" value="${crypto.id}" onchange="toggleSelection('${crypto.id}')"> Compare
-                    <div id="${crypto.id}" class="price-details">
-                        <p>USD: $${crypto.current_price.toLocaleString()}</p>
-                        <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
-                        <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
-                        <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
-                        <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
-                        <p>AUD: A$${(crypto.current_price * currencies.aud).toLocaleString()}</p>  <!-- Added AUD price -->
-                        <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
-                        <p class="${priceChangeClass}">24h Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
-                        <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
-                        <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
-                    </div>
-                `;
-                container.appendChild(card);
-
-                // Populate the grid with all cryptos and their prices
-                const gridCard = document.createElement('div');
-                gridCard.className = 'crypto-card';
-                gridCard.innerHTML = `
-                    <h3>${crypto.name} (${crypto.symbol.toUpperCase()})</h3>
                     <p>USD: $${crypto.current_price.toLocaleString()}</p>
-                    <p>NGN: ₦${(crypto.current_price * currencies.ngn).toLocaleString()}</p>
                     <p>GBP: £${(crypto.current_price * currencies.gbp).toLocaleString()}</p>
                     <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
                     <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
                     <p>AUD: A$${(crypto.current_price * currencies.aud).toLocaleString()}</p>
+                    <p class="${priceChangeClass}">Live Change: ${cryptoChanges[crypto.id].toFixed(4)}%</p>
+                    <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
+                    <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
+                    <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
                 `;
-                allCryptoGrid.appendChild(gridCard);
+                container.appendChild(card);
             });
         }
 
-        function togglePrices(id) {
-            const priceDiv = document.getElementById(id);
-            if (priceDiv.style.display === 'none' || priceDiv.style.display === '') {
-                priceDiv.style.display = 'block';
-            } else {
-                priceDiv.style.display = 'none';
-            }
-        }
-
-        function toggleSelection(id) {
-            if (selectedCryptos.includes(id)) {
-                selectedCryptos = selectedCryptos.filter(crypto => crypto !== id);
-            } else {
-                selectedCryptos.push(id);
-            }
-        }
-
-        function compareSelected() {
-            const comparisonContainer = document.getElementById('comparison-container');
-            comparisonContainer.innerHTML = '<h2>Comparison Results</h2>';
-
-            const comparedCryptos = allCryptos.filter(crypto => selectedCryptos.includes(crypto.id));
-            if (comparedCryptos.length < 2) {
-                comparisonContainer.innerHTML += '<p>Please select at least two cryptocurrencies to compare.</p>';
-                return;
-            }
-
-            comparedCryptos.forEach(crypto => {
-                comparisonContainer.innerHTML += `
-                    <div class="crypto-card">
-                        <h3>${crypto.name} (${crypto.symbol.toUpperCase()})</h3>
-                        <p>USD: $${crypto.current_price.toLocaleString()}</p>
-                        <p>AUD: A$${(crypto.current_price * currencies.aud).toLocaleString()}</p> <!-- Added AUD -->
-                        <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
-                        <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
-                        <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
-                    </div>
-                `;
-            });
-        }
+        // Auto-update every second for real-time price changes
+        setInterval(displayCryptos, 1000);
 
         document.addEventListener('DOMContentLoaded', displayCryptos);
     </script>
