@@ -91,7 +91,6 @@
     </div>
     <script>
         const apiUrl = 'https://api.coingecko.com/api/v3/coins/markets';
-        const tickersUrl = 'https://api.coingecko.com/api/v3/coins/';
         const currencies = {
             usd: 1,
             gbp: 0.78,
@@ -102,21 +101,14 @@
 
         // Fetch market data for BTC, ETH, and USDT
         async function fetchCryptoData() {
-            const response = await fetch(`${apiUrl}?vs_currency=usd&ids=bitcoin,ethereum,tether&order=market_cap_desc&sparkline=false`);
-            return response.json();
-        }
-
-        // Fetch real-time price percentage changes every second
-        async function fetchPriceChanges() {
-            const btcData = await fetch(`${tickersUrl}bitcoin/tickers`).then(res => res.json());
-            const ethData = await fetch(`${tickersUrl}ethereum/tickers`).then(res => res.json());
-            const usdtData = await fetch(`${tickersUrl}tether/tickers`).then(res => res.json());
-
-            return {
-                bitcoin: btcData.tickers[0]?.last ?? 0,
-                ethereum: ethData.tickers[0]?.last ?? 0,
-                tether: usdtData.tickers[0]?.last ?? 0
-            };
+            try {
+                const response = await fetch(`${apiUrl}?vs_currency=usd&ids=bitcoin,ethereum,tether&order=market_cap_desc&sparkline=false`);
+                if (!response.ok) throw new Error('Failed to fetch data');
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching cryptocurrency data:", error);
+                return [];
+            }
         }
 
         // Display updated crypto prices and market data
@@ -125,11 +117,9 @@
             container.innerHTML = '';
 
             const cryptos = await fetchCryptoData();
-            const cryptoChanges = await fetchPriceChanges();
+            if (cryptos.length === 0) return;
 
             cryptos.forEach(crypto => {
-                const priceChangeClass = cryptoChanges[crypto.id] >= 0 ? 'price-up' : 'price-down';
-
                 const card = document.createElement('div');
                 card.className = 'crypto-card';
                 card.innerHTML = `
@@ -142,7 +132,6 @@
                     <p>EUR: €${(crypto.current_price * currencies.eur).toLocaleString()}</p>
                     <p>JPY: ¥${(crypto.current_price * currencies.jpy).toLocaleString()}</p>
                     <p>AUD: A$${(crypto.current_price * currencies.aud).toLocaleString()}</p>
-                    <p class="${priceChangeClass}">Live Change: ${cryptoChanges[crypto.id].toFixed(4)}%</p>
                     <p>Market Cap: $${crypto.market_cap.toLocaleString()}</p>
                     <p>Volume: ${crypto.total_volume.toLocaleString()}</p>
                     <p>Supply: ${crypto.circulating_supply ? crypto.circulating_supply.toLocaleString() : 'N/A'}</p>
